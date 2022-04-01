@@ -23,7 +23,7 @@ public class Prostokat2 extends Prostokat implements Rysowanie {
     public void rysuj() {
         for (int i = 0; i < super.y; i++) {
             for (int j = 0; j < super.x; j++) {
-                System.out.print("*");
+                System.out.print(znak);
             }
             System.out.println("");
         }

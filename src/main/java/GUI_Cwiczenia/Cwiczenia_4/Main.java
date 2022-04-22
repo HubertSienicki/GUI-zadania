@@ -22,6 +22,7 @@ public class Main {
         fig[1] = new Prostokat(20, 20, 15, 10);    // po?o?enie prostok?ta = lewy g�rny wierzcho?ek = (20,20), szeroko?? = 15, wysoko?? = 10
       
             // polimorficzne wywo?anie metody toString() z klas Kolo/Prostokat,
+           
             // a nie z klasy Figura
         for (Figura f : fig)              // p?tla for-each
             System.out.println(f);    // System.out.println(f.toString());

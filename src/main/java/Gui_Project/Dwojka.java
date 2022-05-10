@@ -14,11 +14,6 @@ public class Dwojka extends Pokoj {
     
     private int days;
     
-    
-    public Dwojka(String type) {
-        super(type);
-    }
-    
     public Dwojka(String type, int days) {
         super(type);
         this.days = days;
@@ -55,7 +50,7 @@ public class Dwojka extends Pokoj {
 
     @Override
     public String toString() {
-        return "Typ: " + super.type + ", Nazwa: " + this.getName() + ", Ilosc dni: " + this.getDays();
+        return " Typ: " + super.type + ", Nazwa: " + this.getName() + ", Ilosc dni: " + this.getDays();
     }
     
 }

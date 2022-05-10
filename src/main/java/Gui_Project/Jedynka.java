@@ -10,12 +10,6 @@ package Gui_Project;
  * @author kneiv
  */
 public class Jedynka extends Pokoj  {
-    
-    
-    
-    public Jedynka(String type) {
-        super(type);
-    }
 
     public Jedynka(String type, int days) {
         super(type, days);
@@ -47,7 +41,7 @@ public class Jedynka extends Pokoj  {
 
     @Override
     public String toString(){
-         return "Typ: " + super.type + ", Nazwa: " + this.getName() + ", Ilosc dni: " + this.getDays();
+         return " Typ: " + super.type + ", Nazwa: " + this.getName() + ", Ilosc dni: " + this.getDays();
     }
 
     @Override

@@ -11,10 +11,6 @@ package Gui_Project;
  */
 public class Trojka extends Pokoj {
     private int days;
-
-    public Trojka(String type) {
-        super(type);
-    }
     
     public Trojka(String type, int days) {
         super(type);
@@ -53,7 +49,7 @@ public class Trojka extends Pokoj {
     
     @Override
     public String toString(){
-        return "Typ: " + super.type + ", Nazwa: " + this.getName() + ", Ilosc dni: " + this.getDays();
+        return " Typ: " + super.type + ", Nazwa: " + this.getName() + ", Ilosc dni: " + this.getDays();
     }
     
     

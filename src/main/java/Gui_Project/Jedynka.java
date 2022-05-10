@@ -52,7 +52,7 @@ public class Jedynka extends Pokoj  {
 
     @Override
     public void decreaseDays() {
-        super.days -= 1;
+        this.days -= 1;
     }
     
     

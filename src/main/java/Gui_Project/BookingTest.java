@@ -20,11 +20,10 @@ public class BookingTest {
       int price = 0;
       
       Cennik cennik = Cennik.pobierzCennik();
-      System.out.println(temp);
+      
       for (int i = 0; i < temp.size(); i++) {
           if(temp.get(i).getType().equals(typ)){
               price += (cennik.getPrice(temp.get(i).getType(), temp.get(i).getName())) * temp.get(i).getDays();
-              System.out.println(price);
           }
       }
       return price;

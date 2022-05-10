@@ -16,7 +16,7 @@ public class Klient {
     private int capital;
     private final ArrayList<Pokoj> pokoje = new ArrayList<>();
     private String platnosc;
-    private ListaZyczen listaZyczen = new ListaZyczen();
+    private final ListaZyczen listaZyczen = new ListaZyczen();
     private Koszyk koszyk;
     
     public Klient(String name, int capital) {
@@ -32,7 +32,7 @@ public class Klient {
         Cennik cennik = Cennik.pobierzCennik();
         
         switch (formaPlatnosci) {
-            case "karta":
+            case "karta" -> {
                 for(Pokoj pokoj : pokoje){
                     if((capital - (cennik.getPrice(pokoj.getType(), pokoj.getName()) * pokoj.getDays())) < 0){
                         for (int i = 0; i < pokoj.getDays(); i++) {
@@ -45,24 +45,23 @@ public class Klient {
                         break;
                     }
                 }
-                break;
-            case "przelew":
-                for(Pokoj pokoj : pokoje){
-                     if((capital - (cennik.getPrice(pokoj.getType(), pokoj.getName()) * pokoj.getDays())) < 0){
-                            for (int i = 0; i < pokoj.getDays(); i++) {
-                                if((capital - cennik.getPrice(pokoj.getType(), pokoj.getName())) > 0){
-                                    capital -= cennik.getPrice(pokoj.getType(), pokoj.getName());
-                                    pokoj.decreaseDays();
-                                }
+            }
+            case "przelew" -> pokoje.forEach(pokoj -> {
+                    if((capital - (cennik.getPrice(pokoj.getType(), pokoj.getName()) * pokoj.getDays())) < 0){
+                        for (int i = 0; i < pokoj.getDays(); i++) {
+                            if((capital - cennik.getPrice(pokoj.getType(), pokoj.getName())) > 0){
+                                capital -= cennik.getPrice(pokoj.getType(), pokoj.getName());
+                                pokoj.decreaseDays();
                             }
+                        }
                     }else{
                         capital -= (cennik.getPrice(pokoj.getType(), pokoj.getName()) * pokoj.getDays());
                         this.koszyk.usunZKoszyka(pokoj);
                     }
-                }
-                break;
-            default:
-                break;
+            });
+
+            default -> {
+            }
         }
     }
 
@@ -79,13 +78,12 @@ public class Klient {
         Cennik cennik = Cennik.pobierzCennik();
         this.koszyk = koszyk;
         
-        for (Pokoj pokoj : pokoje) {
-            
-            if(cennik.getPrice(pokoj.getType(), pokoj.getName()) > 0){
-                koszyk.dodajDoKoszyka(pokoj);
-                listaZyczen.usunZListy(pokoj);
-            }
-        }
+        pokoje.stream().filter(pokoj -> (cennik.getPrice(pokoj.getType(), pokoj.getName()) > 0)).map(pokoj -> {
+            koszyk.dodajDoKoszyka(pokoj);
+            return pokoj;
+        }).forEachOrdered(pokoj -> {
+            listaZyczen.usunZListy(pokoj);
+        });
         
         for (int i = 0; i < listaZyczen.getZyczenia().size(); i++) {
             pokoje.remove(listaZyczen.getZyczenia().get(i));

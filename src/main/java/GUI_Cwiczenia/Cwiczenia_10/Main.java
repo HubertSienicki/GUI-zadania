@@ -38,7 +38,7 @@ public class Main {
     }
     
     public static void zadanie2(){
-        char option = JOptionPane.showInputDialog("Prosze wpisac opcje: ");
+        char option = JOptionPane.showInputDialog("Prosze wpisac opcje: ").charAt(0);
         JFrame window = new JFrame("Zadanie 2");
         window.setSize(640, 380);
         

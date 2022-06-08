@@ -1,6 +1,7 @@
 package GUI_PROJECT_2;
 
 import javax.swing.*;
+import java.util.ArrayList;
 
 public class Controller {
     private View view;
@@ -11,6 +12,7 @@ public class Controller {
 
     public void initController() {
         initFileMenu();
+        initEditMenu();
         initOptionsMenu();
     }
 
@@ -34,6 +36,23 @@ public class Controller {
         });
     }
 
+    private void initEditMenu() {
+        view.getPraca().addActionListener(e -> {
+            String text = "Przytorowa 8";
+            view.getTextArea().setText(refactorText(text));
+        });
+
+        view.getDom().addActionListener(e -> {
+            String text = "Jankowska 5";
+            view.getTextArea().setText(refactorText(text));
+        });
+
+        view.getSzkola().addActionListener(e -> {
+            String text = "Koszykowa 86";
+            view.getTextArea().setText(refactorText(text));
+        });
+    }
+
     private void initOptionsMenu() {
         for (JRadioButtonMenuItem item : view.getForegroundButtonArray()) {
             item.addActionListener(e -> {
@@ -47,10 +66,29 @@ public class Controller {
             });
         }
 
-        for(JMenuItem item : view.getFontSizeItemArray()){
+        for (JMenuItem item : view.getFontSizeItemArray()) {
             item.addActionListener(e -> {
                 view.getTextArea().setFont(item.getFont());
             });
         }
+    }
+
+    private String refactorText(String text){
+        String finalText = "";
+        int caretPosition = view.getTextArea().getCaretPosition();
+        ArrayList copyText = new ArrayList();
+
+        for (char a : view.getTextArea().getText().toCharArray()) {
+            copyText.add(a);
+        }
+
+        for (char a : text.toCharArray()){
+            copyText.add(caretPosition++, a);
+        }
+
+        for (Object a : copyText){
+            finalText += a;
+        }
+        return finalText;
     }
 }

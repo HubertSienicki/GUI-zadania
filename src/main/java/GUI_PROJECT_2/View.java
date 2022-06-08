@@ -5,11 +5,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class View {
 
     View() {
-        SwingUtilities.invokeLater(() -> initUI());
+        initUI();
     }
 
     private void initUI() {
@@ -51,7 +53,7 @@ public class View {
         open = new JMenuItem("Open");
         save = new JMenuItem("Save");
         saveAs = new JMenuItem("Save As");
-        exit = new JMenuItem("Exit");
+        this.exit = new JMenuItem("Exit");
 
         fileMenu.setMnemonic(KeyEvent.VK_F);
         open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
@@ -142,6 +144,7 @@ public class View {
     }
 
     //Getters and setters
+
     public JFrame getFrame() {
         return frame;
     }
@@ -211,7 +214,7 @@ public class View {
     }
 
     public JMenuItem getExit() {
-        return exit;
+        return this.exit;
     }
 
     public JMenuItem getPraca() {
@@ -338,6 +341,7 @@ public class View {
         this.title = title;
     }
 
+
     //Variables DO NOT EDIT
     Color colorTable[] = {Color.green, Color.orange, Color.red, Color.black, Color.white, Color.yellow, Color.blue};
     int colorIndex = 0;
@@ -398,4 +402,20 @@ public class View {
     private JLabel previousBackground;
     private JLabel previousFontSize;
     private JLabel fileStatus;
+
+    public JRadioButtonMenuItem[] getForegroundButtonArray() {
+        return foregroundButtons;
+    }
+
+    public JRadioButtonMenuItem[] getBackgroundButtonArray() {
+        return backgroundButtons;
+    }
+
+    public JMenuItem[] getFontSizeItemArray() {
+        return fontSizeButtons;
+    }
+
+    private JRadioButtonMenuItem foregroundButtons[] = {greenButtonForeground, orangeButtonForeground, redButtonForeground, blackButtonForeground, whiteButtonForeground, yellowButtonForeground, blueButtonForeground};
+    private JRadioButtonMenuItem backgroundButtons[] = {greenButtonBackground, orangeButtonBackground, redButtonBackground, blackButtonBackground, whiteButtonBackground, yellowButtonBackground, blueButtonBackground};
+    private JMenuItem fontSizeButtons[] = {fontSize8pt, fontSize10pt, fontSize12pt, fontSize14pt, fontSize16pt, fontSize18pt, fontSize20pt, fontSize22pt, fontSize24pt};
 }

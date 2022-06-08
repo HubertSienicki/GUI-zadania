@@ -7,7 +7,8 @@ public class FileContent {
     private String filename;
     private String extension;
     private String content;
-
+    private UsedFontSize currentFontSize;
+    private UsedFontSize previousFontSize;
     private FileStatus fileStatus;
 
     /**
@@ -17,7 +18,29 @@ public class FileContent {
         extension = ".txt";
         filename = "default" + extension;
         content = "";
+        currentFontSize = UsedFontSize.SIZE_8PT;
+        previousFontSize = UsedFontSize.SIZE_8PT;
         fileStatus = FileStatus.NEW;
+    }
+
+    public void setCurrentFontSize(UsedFontSize currentFontSize) {
+        this.currentFontSize = currentFontSize;
+    }
+
+    public UsedFontSize getPreviousFontSize() {
+        return previousFontSize;
+    }
+
+    public void setPreviousFontSize(UsedFontSize previousFontSize) {
+        this.previousFontSize = previousFontSize;
+    }
+
+    public UsedFontSize getCurrentFontSize() {
+        return currentFontSize;
+    }
+
+    public void setFontSize(UsedFontSize fontSize) {
+        this.currentFontSize = fontSize;
     }
 
     public FileStatus getFileStatus() {

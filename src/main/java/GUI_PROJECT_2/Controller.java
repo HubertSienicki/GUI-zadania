@@ -21,6 +21,7 @@ public class Controller {
         initFileMenu();
         initEditMenu();
         initOptionsMenu();
+        initBottomLabel();
     }
 
 
@@ -84,13 +85,19 @@ public class Controller {
         for (JMenuItem item : view.getFontSizeItemArray()) {
             item.addActionListener(e -> {
                 view.getTextArea().setFont(item.getFont());
+                setFileContentFontSize();
+                changePreviousFontSizeLabel();
             });
         }
     }
 
+    private void initBottomLabel(){
+        changeFileStatus();
+        changePreviousFontSizeLabel();
+    }
+
     /**
      * Refactors text from jTextArea by adding desired text at a specified caret position
-     *
      * @param text
      * @return String
      */
@@ -196,4 +203,86 @@ public class Controller {
         }
         return extension;
     }
+
+    /**
+     * Changes the label to a previous font size
+     */
+    private void changePreviousFontSizeLabel(){
+        switch (fileContent.getPreviousFontSize()){
+            case SIZE_8PT -> {
+                view.getPreviousFontSize().setText("8pt");
+            }
+            case SIZE_10PT -> {
+                view.getPreviousFontSize().setText("10pt");
+            }
+            case SIZE_12PT -> {
+                view.getPreviousFontSize().setText("12pt");
+            }
+            case SIZE_14PT -> {
+                view.getPreviousFontSize().setText("14pt");
+            }
+            case SIZE_16PT -> {
+                view.getPreviousFontSize().setText("16pt");
+            }
+            case SIZE_18PT -> {
+                view.getPreviousFontSize().setText("18pt");
+            }
+            case SIZE_20PT -> {
+                view.getPreviousFontSize().setText("20pt");
+            }
+            case SIZE_22PT -> {
+                view.getPreviousFontSize().setText("22pt");
+            }
+            case SIZE_24PT -> {
+                view.getPreviousFontSize().setText("24pt");
+            }
+        }
+    }
+
+    /**
+     * Changes the fontsize enum of a FileContent object
+     */
+    private void setFileContentFontSize(){
+        switch(view.getTextArea().getFont().getSize()){
+            case 8 :
+                fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
+                fileContent.setFontSize(UsedFontSize.SIZE_8PT);
+                break;
+            case 10 :
+                fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
+                fileContent.setFontSize(UsedFontSize.SIZE_10PT);
+                break;
+            case 12 :
+                fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
+                fileContent.setFontSize(UsedFontSize.SIZE_12PT);
+                break;
+            case 14 :
+                fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
+                fileContent.setFontSize(UsedFontSize.SIZE_14PT);
+                break;
+            case 16 :
+                fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
+                fileContent.setFontSize(UsedFontSize.SIZE_16PT);
+                break;
+            case 18 :
+                fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
+                fileContent.setFontSize(UsedFontSize.SIZE_18PT);
+                break;
+            case 20 :
+                fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
+                fileContent.setFontSize(UsedFontSize.SIZE_20PT);
+                break;
+            case 22 :
+                fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
+                fileContent.setFontSize(UsedFontSize.SIZE_22PT);
+                break;
+            case 24 :
+                fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
+                fileContent.setFontSize(UsedFontSize.SIZE_24PT);
+                break;
+        }
+    }
+
+
+
 }

@@ -3,6 +3,7 @@ package GUI_PROJECT_2;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
 import java.util.List;
@@ -110,9 +111,9 @@ public class View {
         dom = new JMenuItem("Dom");
         szkola = new JMenuItem("Szkola");
 
-        praca.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.SHIFT_MASK + ActionEvent.CTRL_MASK));
-        dom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.SHIFT_MASK + ActionEvent.CTRL_MASK));
-        szkola.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.SHIFT_MASK + ActionEvent.CTRL_MASK));
+        praca.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
+        dom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
+        szkola.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
 
         editMenu.setMnemonic(KeyEvent.VK_E);
 
@@ -343,9 +344,9 @@ public class View {
 
 
     //Variables DO NOT EDIT
-    Color colorTable[] = {Color.green, Color.orange, Color.red, Color.black, Color.white, Color.yellow, Color.blue};
+    Color[] colorTable = {Color.green, Color.orange, Color.red, Color.black, Color.white, Color.yellow, Color.blue};
     int colorIndex = 0;
-    Font fontTable[] = {new Font("JetBrains Mono", Font.PLAIN, 8), new Font("JetBrains Mono", Font.PLAIN, 10), new Font("JetBrains Mono", Font.PLAIN, 12), new Font("JetBrains Mono", Font.PLAIN, 14), new Font("JetBrains Mono", Font.PLAIN, 16), new Font("JetBrains Mono", Font.PLAIN, 18), new Font("JetBrains Mono", Font.PLAIN, 20), new Font("JetBrains Mono", Font.PLAIN, 22), new Font("JetBrains Mono", Font.PLAIN, 24)};
+    Font[] fontTable = {new Font("JetBrains Mono", Font.PLAIN, 8), new Font("JetBrains Mono", Font.PLAIN, 10), new Font("JetBrains Mono", Font.PLAIN, 12), new Font("JetBrains Mono", Font.PLAIN, 14), new Font("JetBrains Mono", Font.PLAIN, 16), new Font("JetBrains Mono", Font.PLAIN, 18), new Font("JetBrains Mono", Font.PLAIN, 20), new Font("JetBrains Mono", Font.PLAIN, 22), new Font("JetBrains Mono", Font.PLAIN, 24)};
     int fontIndex = 0;
     private final int width = 600;
     private final int height = 400;

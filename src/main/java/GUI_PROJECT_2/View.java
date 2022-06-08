@@ -2,14 +2,14 @@ package GUI_PROJECT_2;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
 
 public class View {
 
     View() {
-        SwingUtilities.invokeLater(
-                () -> initUI()
-        );
+        SwingUtilities.invokeLater(() -> initUI());
     }
 
     private void initUI() {
@@ -53,9 +53,16 @@ public class View {
         saveAs = new JMenuItem("Save As");
         exit = new JMenuItem("Exit");
 
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+        open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+
         fileMenu.add(open);
         fileMenu.add(save);
         fileMenu.add(saveAs);
+        fileMenu.addSeparator();
         fileMenu.add(exit);
     }
 
@@ -66,16 +73,28 @@ public class View {
         fontSizeMenu = new JMenu("Font size");
 
         for (JRadioButtonMenuItem jRadioButtonMenuItem : Arrays.asList(greenButtonForeground, orangeButtonForeground, redButtonForeground, blackButtonForeground, whiteButtonForeground, yellowButtonForeground, blueButtonForeground)) {
+            jRadioButtonMenuItem.setForeground(colorTable[colorIndex]);
+            colorIndex++;
             foregroundMenu.add(jRadioButtonMenuItem);
         }
 
+        colorIndex = 0;
+
         for (JRadioButtonMenuItem jRadioButtonMenuItem : Arrays.asList(greenButtonBackground, orangeButtonBackground, redButtonBackground, blackButtonBackground, whiteButtonBackground, yellowButtonBackground, blueButtonBackground)) {
+            jRadioButtonMenuItem.setForeground(colorTable[colorIndex]);
+            colorIndex++;
             backgroundMenu.add(jRadioButtonMenuItem);
         }
 
         for (JMenuItem item : Arrays.asList(fontSize8pt, fontSize10pt, fontSize12pt, fontSize14pt, fontSize16pt, fontSize18pt, fontSize20pt, fontSize22pt, fontSize24pt)) {
+            item.setFont(fontTable[fontIndex]);
+            fontIndex++;
             fontSizeMenu.add(item);
         }
+
+        fontIndex = 0;
+
+        optionsMenu.setMnemonic(KeyEvent.VK_O);
 
         optionsMenu.add(foregroundMenu);
         optionsMenu.add(backgroundMenu);
@@ -89,6 +108,12 @@ public class View {
         dom = new JMenuItem("Dom");
         szkola = new JMenuItem("Szkola");
 
+        praca.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.SHIFT_MASK + ActionEvent.CTRL_MASK));
+        dom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.SHIFT_MASK + ActionEvent.CTRL_MASK));
+        szkola.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.SHIFT_MASK + ActionEvent.CTRL_MASK));
+
+        editMenu.setMnemonic(KeyEvent.VK_E);
+
         addressMenu.add(praca);
         addressMenu.add(dom);
         addressMenu.add(szkola);
@@ -97,10 +122,10 @@ public class View {
 
     private void createTextArea() {
         textArea = new JTextArea();
-        textAreaScrollPane = new JScrollPane(textArea,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        textAreaScrollPane = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     }
 
-    private void createBottomPanel(){
+    private void createBottomPanel() {
         previousBackground = new JLabel("test");
         previousForground = new JLabel("test");
         previousFontSize = new JLabel("testpt");
@@ -116,6 +141,7 @@ public class View {
 
     }
 
+    //Getters and setters
     public JFrame getFrame() {
         return frame;
     }
@@ -312,8 +338,11 @@ public class View {
         this.title = title;
     }
 
-
     //Variables DO NOT EDIT
+    Color colorTable[] = {Color.green, Color.orange, Color.red, Color.black, Color.white, Color.yellow, Color.blue};
+    int colorIndex = 0;
+    Font fontTable[] = {new Font("JetBrains Mono", Font.PLAIN, 8), new Font("JetBrains Mono", Font.PLAIN, 10), new Font("JetBrains Mono", Font.PLAIN, 12), new Font("JetBrains Mono", Font.PLAIN, 14), new Font("JetBrains Mono", Font.PLAIN, 16), new Font("JetBrains Mono", Font.PLAIN, 18), new Font("JetBrains Mono", Font.PLAIN, 20), new Font("JetBrains Mono", Font.PLAIN, 22), new Font("JetBrains Mono", Font.PLAIN, 24)};
+    int fontIndex = 0;
     private final int width = 600;
     private final int height = 400;
     private String title = "Notepad";

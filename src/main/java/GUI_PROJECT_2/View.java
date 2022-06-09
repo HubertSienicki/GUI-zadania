@@ -6,8 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class View {
 
@@ -75,25 +73,8 @@ public class View {
         backgroundMenu = new JMenu("Background");
         fontSizeMenu = new JMenu("Font size");
 
-        for (JRadioButtonMenuItem jRadioButtonMenuItem : Arrays.asList(greenButtonForeground, orangeButtonForeground, redButtonForeground, blackButtonForeground, whiteButtonForeground, yellowButtonForeground, blueButtonForeground)) {
-            jRadioButtonMenuItem.setForeground(colorTable[colorIndex]);
-            colorIndex++;
-            foregroundMenu.add(jRadioButtonMenuItem);
-        }
-
-        colorIndex = 0;
-
-        for (JRadioButtonMenuItem jRadioButtonMenuItem : Arrays.asList(greenButtonBackground, orangeButtonBackground, redButtonBackground, blackButtonBackground, whiteButtonBackground, yellowButtonBackground, blueButtonBackground)) {
-            jRadioButtonMenuItem.setForeground(colorTable[colorIndex]);
-            colorIndex++;
-            backgroundMenu.add(jRadioButtonMenuItem);
-        }
-
-        for (JMenuItem item : Arrays.asList(fontSize8pt, fontSize10pt, fontSize12pt, fontSize14pt, fontSize16pt, fontSize18pt, fontSize20pt, fontSize22pt, fontSize24pt)) {
-            item.setFont(fontTable[fontIndex]);
-            fontIndex++;
-            fontSizeMenu.add(item);
-        }
+        generateButtons();
+        generateFontButtons();
 
         fontIndex = 0;
 
@@ -144,62 +125,64 @@ public class View {
 
     }
 
+    /**
+     * Generates font buttons
+     */
+    private void generateFontButtons(){
+        for (int i = 0; i < fontSizeButtons.length; i++){
+            fontSizeButtons[i] = new JMenuItem();
+
+            fontSizeButtons[i].setFont(fontTable[i]);
+            fontSizeButtons[i].setText(fontTable[i].getSize() + "pt");
+
+            fontSizeMenu.add(fontSizeButtons[i]);
+        }
+    }
+    /**
+     * Generates background and foreground buttons
+     */
+    private void generateButtons(){
+        for (int i = 0; i < backgroundButtons.length ; i++) {
+
+            backgroundButtons[i] = new JRadioButtonMenuItem();
+            foregroundButtons[i] = new JRadioButtonMenuItem();
+
+            JLabel backgroundButtonLabel = new JLabel(new IconCreator(colorTable[colorIndex]));
+            JLabel foregroundButtonLabel = new JLabel(new IconCreator(colorTable[colorIndex]));
+
+            foregroundButtons[i].setPreferredSize(new Dimension(80, 20));
+            foregroundButtonLabel.setText("     " + colorNames[i]);
+            foregroundButtonLabel.setForeground(colorTable[colorIndex]);
+
+            backgroundButtons[i].setPreferredSize(new Dimension(80,20));
+            backgroundButtonLabel.setText("     " + colorNames[i]);
+            backgroundButtonLabel.setForeground(colorTable[colorIndex]);
+
+            backgroundButtons[i].add(backgroundButtonLabel);
+            backgroundButtons[i].setForeground(colorTable[colorIndex]);
+
+            foregroundButtons[i].add(foregroundButtonLabel);
+            foregroundButtons[i].setForeground(colorTable[colorIndex]);
+
+            foregroundMenu.add(foregroundButtons[i]);
+            foregroundButtonGroup.add(foregroundButtons[i]);
+
+            backgroundButtonGroup.add(backgroundButtons[i]);
+            backgroundMenu.add(backgroundButtons[i]);
+
+            colorIndex++;
+        }
+        colorIndex = 0;
+    }
+
     //Getters and setters
 
     public JFrame getFrame() {
         return frame;
     }
 
-    public JPanel getPanel() {
-        return panel;
-    }
-
-    public JPanel getBottomPanel() {
-        return bottomPanel;
-    }
-
-    public JPanel getPreviousInfoPanel() {
-        return previousInfoPanel;
-    }
-
     public JTextArea getTextArea() {
         return textArea;
-    }
-
-    public JMenuBar getMenuBar() {
-        return menuBar;
-    }
-
-    public JMenu getFileMenu() {
-        return fileMenu;
-    }
-
-    public JMenu getEditMenu() {
-        return editMenu;
-    }
-
-    public JMenu getOptionsMenu() {
-        return optionsMenu;
-    }
-
-    public JMenu getAddressMenu() {
-        return addressMenu;
-    }
-
-    public JMenu getForegroundMenu() {
-        return foregroundMenu;
-    }
-
-    public JMenu getBackgroundMenu() {
-        return backgroundMenu;
-    }
-
-    public JMenu getFontSizeMenu() {
-        return fontSizeMenu;
-    }
-
-    public JScrollPane getTextAreaScrollPane() {
-        return textAreaScrollPane;
     }
 
     public JMenuItem getOpen() {
@@ -230,106 +213,6 @@ public class View {
         return szkola;
     }
 
-    public JRadioButtonMenuItem getGreenButtonForeground() {
-        return greenButtonForeground;
-    }
-
-    public JRadioButtonMenuItem getOrangeButtonForeground() {
-        return orangeButtonForeground;
-    }
-
-    public JRadioButtonMenuItem getRedButtonForeground() {
-        return redButtonForeground;
-    }
-
-    public JRadioButtonMenuItem getBlackButtonForeground() {
-        return blackButtonForeground;
-    }
-
-    public JRadioButtonMenuItem getWhiteButtonForeground() {
-        return whiteButtonForeground;
-    }
-
-    public JRadioButtonMenuItem getYellowButtonForeground() {
-        return yellowButtonForeground;
-    }
-
-    public JRadioButtonMenuItem getBlueButtonForeground() {
-        return blueButtonForeground;
-    }
-
-    public JRadioButtonMenuItem getGreenButtonBackground() {
-        return greenButtonBackground;
-    }
-
-    public JRadioButtonMenuItem getOrangeButtonBackground() {
-        return orangeButtonBackground;
-    }
-
-    public JRadioButtonMenuItem getRedButtonBackground() {
-        return redButtonBackground;
-    }
-
-    public JRadioButtonMenuItem getBlackButtonBackground() {
-        return blackButtonBackground;
-    }
-
-    public JRadioButtonMenuItem getWhiteButtonBackground() {
-        return whiteButtonBackground;
-    }
-
-    public JRadioButtonMenuItem getYellowButtonBackground() {
-        return yellowButtonBackground;
-    }
-
-    public JRadioButtonMenuItem getBlueButtonBackground() {
-        return blueButtonBackground;
-    }
-
-    public JMenuItem getFontSize8pt() {
-        return fontSize8pt;
-    }
-
-    public JMenuItem getFontSize10pt() {
-        return fontSize10pt;
-    }
-
-    public JMenuItem getFontSize12pt() {
-        return fontSize12pt;
-    }
-
-    public JMenuItem getFontSize14pt() {
-        return fontSize14pt;
-    }
-
-    public JMenuItem getFontSize16pt() {
-        return fontSize16pt;
-    }
-
-    public JMenuItem getFontSize18pt() {
-        return fontSize18pt;
-    }
-
-    public JMenuItem getFontSize20pt() {
-        return fontSize20pt;
-    }
-
-    public JMenuItem getFontSize22pt() {
-        return fontSize22pt;
-    }
-
-    public JMenuItem getFontSize24pt() {
-        return fontSize24pt;
-    }
-
-    public JLabel getPreviousForground() {
-        return previousForground;
-    }
-
-    public JLabel getPreviousBackground() {
-        return previousBackground;
-    }
-
     public JLabel getPreviousFontSize() {
         return previousFontSize;
     }
@@ -338,13 +221,10 @@ public class View {
         return fileStatus;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-
     //Variables DO NOT EDIT
     Color[] colorTable = {Color.green, Color.orange, Color.red, Color.black, Color.white, Color.yellow, Color.blue};
+    String[] colorNames = {"Green", "Orange", "Red", "Black", "White", "Yellow", "Blue"};
+
     int colorIndex = 0;
     Font[] fontTable = {new Font("JetBrains Mono", Font.PLAIN, 8), new Font("JetBrains Mono", Font.PLAIN, 10), new Font("JetBrains Mono", Font.PLAIN, 12), new Font("JetBrains Mono", Font.PLAIN, 14), new Font("JetBrains Mono", Font.PLAIN, 16), new Font("JetBrains Mono", Font.PLAIN, 18), new Font("JetBrains Mono", Font.PLAIN, 20), new Font("JetBrains Mono", Font.PLAIN, 22), new Font("JetBrains Mono", Font.PLAIN, 24)};
     int fontIndex = 0;
@@ -374,31 +254,6 @@ public class View {
     private JMenuItem dom;
     private JMenuItem szkola;
 
-    private JRadioButtonMenuItem greenButtonForeground = new JRadioButtonMenuItem("Green");
-    private JRadioButtonMenuItem orangeButtonForeground = new JRadioButtonMenuItem("Orange");
-    private JRadioButtonMenuItem redButtonForeground = new JRadioButtonMenuItem("Red");
-    private JRadioButtonMenuItem blackButtonForeground = new JRadioButtonMenuItem("Black");
-    private JRadioButtonMenuItem whiteButtonForeground = new JRadioButtonMenuItem("White");
-    private JRadioButtonMenuItem yellowButtonForeground = new JRadioButtonMenuItem("Yellow");
-    private JRadioButtonMenuItem blueButtonForeground = new JRadioButtonMenuItem("Blue");
-    private JRadioButtonMenuItem greenButtonBackground = new JRadioButtonMenuItem("Green");
-    private JRadioButtonMenuItem orangeButtonBackground = new JRadioButtonMenuItem("Orange");
-    private JRadioButtonMenuItem redButtonBackground = new JRadioButtonMenuItem("Red");
-    private JRadioButtonMenuItem blackButtonBackground = new JRadioButtonMenuItem("Black");
-    private JRadioButtonMenuItem whiteButtonBackground = new JRadioButtonMenuItem("White");
-    private JRadioButtonMenuItem yellowButtonBackground = new JRadioButtonMenuItem("Yellow");
-    private JRadioButtonMenuItem blueButtonBackground = new JRadioButtonMenuItem("Blue");
-
-    private JMenuItem fontSize8pt = new JMenuItem("8 pt");
-    private JMenuItem fontSize10pt = new JMenuItem("10 pt");
-    private JMenuItem fontSize12pt = new JMenuItem("12 pt");
-    private JMenuItem fontSize14pt = new JMenuItem("14 pt");
-    private JMenuItem fontSize16pt = new JMenuItem("16 pt");
-    private JMenuItem fontSize18pt = new JMenuItem("18 pt");
-    private JMenuItem fontSize20pt = new JMenuItem("20 pt");
-    private JMenuItem fontSize22pt = new JMenuItem("22 pt");
-    private JMenuItem fontSize24pt = new JMenuItem("24 pt");
-
     private JLabel previousForground;
     private JLabel previousBackground;
     private JLabel previousFontSize;
@@ -416,7 +271,11 @@ public class View {
         return fontSizeButtons;
     }
 
-    private JRadioButtonMenuItem foregroundButtons[] = {greenButtonForeground, orangeButtonForeground, redButtonForeground, blackButtonForeground, whiteButtonForeground, yellowButtonForeground, blueButtonForeground};
-    private JRadioButtonMenuItem backgroundButtons[] = {greenButtonBackground, orangeButtonBackground, redButtonBackground, blackButtonBackground, whiteButtonBackground, yellowButtonBackground, blueButtonBackground};
-    private JMenuItem fontSizeButtons[] = {fontSize8pt, fontSize10pt, fontSize12pt, fontSize14pt, fontSize16pt, fontSize18pt, fontSize20pt, fontSize22pt, fontSize24pt};
+    private final ButtonGroup foregroundButtonGroup = new ButtonGroup();
+    private final ButtonGroup backgroundButtonGroup = new ButtonGroup();
+
+    private final JRadioButtonMenuItem[] foregroundButtons = new JRadioButtonMenuItem[7];
+    private final JRadioButtonMenuItem[] backgroundButtons = new JRadioButtonMenuItem[7];
+    private final JMenuItem[] fontSizeButtons = new JMenuItem[9];
+
 }

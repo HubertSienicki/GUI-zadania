@@ -74,10 +74,6 @@ public class FileContent {
         this.filename = filename;
     }
 
-    public String getExtension() {
-        return extension;
-    }
-
     public void setExtension(String extension) {
         this.extension = extension;
     }

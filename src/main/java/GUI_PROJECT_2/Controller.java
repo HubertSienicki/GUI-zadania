@@ -183,6 +183,7 @@ public class Controller {
             fileContent.setExtension(extractExtension(fileContent.getFilename()));
             try {
                 readFile();
+                view.getFrame().setTitle(fileContent.getFilename());
 
             } catch (FileNotFoundException ex) {
                 JOptionPane.showMessageDialog(view.getFrame(), "The system could not find the file specified for :"
@@ -247,16 +248,19 @@ public class Controller {
 
         int result = fileChooser.showSaveDialog(view.getFrame());
 
-        if(result == JFileChooser.APPROVE_OPTION){
-            try{
+        if (result == JFileChooser.APPROVE_OPTION) {
+            try {
                 fileContent.setFilename(fileChooser.getSelectedFile().getAbsolutePath());
-                System.out.println(fileContent.getFilename());
                 fileContent.setContent(fileContent.getModifiedContent());
                 fileContent.setModifiedContent("");
+
                 Files.write(Paths.get(fileContent.getFilename()), fileContent.getContent().getBytes(), StandardOpenOption.CREATE);
                 fileContent.setFileStatus(FileStatus.CREATED);
+
                 changeFileStatus();
-            }catch(Exception e){
+
+                view.getFrame().setTitle(fileContent.getFilename());
+            } catch (Exception e) {
                 JOptionPane.showMessageDialog(view.getFrame(), "Program could not save the file to a specified location.");
             }
         }
@@ -288,7 +292,7 @@ public class Controller {
         }
 
         for (int i = tempIndex; i < pathArray.length; i++) {
-            extension.append(String.valueOf(pathArray[i]));
+            extension.append(pathArray[i]);
         }
         return extension.toString();
     }
@@ -406,7 +410,7 @@ public class Controller {
         /**
          * Gets called when contents of a jTextField is modified and adds it to a fileContent.modifiedContent variable
          *
-         * @throws BadLocationException Gets thrown if an exception is not found
+         * @throws BadLocationException Gets thrown if a file is not found
          */
         private void addModifiedText() throws BadLocationException {
             int changedLength = view.getTextArea().getText().length() - fileContent.getContent().length();
@@ -425,7 +429,7 @@ public class Controller {
         /**
          * Gets called if there is a removed content from a modified file
          *
-         * @throws BadLocationException Gets thrown if an exception is not found
+         * @throws BadLocationException Gets thrown if a file is not found
          */
         private void removeModifiedText() throws BadLocationException {
             int changedLength = view.getTextArea().getText().length() - fileContent.getContent().length();
@@ -434,12 +438,13 @@ public class Controller {
             if (changedLength == 0) {
                 if (!fileContent.getFileStatus().equals(FileStatus.NEW)) {
                     fileContent.setFileStatus(FileStatus.OPENED);   //IF LENGTH OF A MODIFIED FILE GOES BACK TO ZERO, CHANGE THE LABEL BACK TO OPENED BECAUSE THE FILE IS NOT MODIFIED
+
                     changeFileStatus();
                 }
             } else if (changedLength < 0) {
                 if (!fileContent.getFileStatus().equals(FileStatus.NEW)) {
                     fileContent.setFileStatus(FileStatus.MODIFIED);
-                    changedLength = 0;
+
                     changeFileStatus();
                 }
             }

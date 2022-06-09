@@ -1,7 +1,18 @@
 package GUI_PROJECT_2;
 
+import org.jetbrains.annotations.NotNull;
+
+import javax.print.Doc;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -22,8 +33,8 @@ public class Controller {
         initEditMenu();
         initOptionsMenu();
         initBottomLabel();
+        initTextArea();
     }
-
 
     /**
      * Initializes file menu
@@ -32,7 +43,12 @@ public class Controller {
         view.getOpen().addActionListener(e -> openFile());
 
         view.getSave().addActionListener(e -> {
-            //TODO:INTEGRATE MNEMONIC TO FILE SAVING
+            try {
+                saveFile();
+                changeFileStatus();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         view.getSaveAs().addActionListener(e -> {
@@ -91,13 +107,18 @@ public class Controller {
         }
     }
 
-    private void initBottomLabel(){
+    private void initBottomLabel() {
         changeFileStatus();
         changePreviousFontSizeLabel();
     }
 
+    private void initTextArea() {
+        view.getTextArea().getDocument().addDocumentListener(new DocumentListenerAdapter());
+    }
+
     /**
      * Refactors text from jTextArea by adding desired text at a specified caret position
+     *
      * @param text
      * @return String
      */
@@ -141,21 +162,26 @@ public class Controller {
         }
     }
 
-
     /**
      * Opens a specified file by a fileChooser
      */
-    private void openFile(){
+    private void openFile() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Specify a file to open");
         int result = fileChooser.showOpenDialog(view.getFrame());
 
         if (result == JFileChooser.APPROVE_OPTION) {
 
+            if (fileContent.getFileStatus() != FileStatus.NEW) {
+                fileContent.setContent("");
+                fileContent.setExtension("");   //RESET if user opens another file
+                fileContent.setFilename("");
+                view.getTextArea().setText(fileContent.getContent());
+            }
+
             fileContent.setSelectedFile(fileChooser.getSelectedFile());
             fileContent.setFilename(fileContent.getSelectedFile().getAbsolutePath());
             fileContent.setExtension(extractExtension(fileContent.getFilename()));
-
             try {
 
                 Scanner reader = new Scanner(fileContent.getSelectedFile());
@@ -163,28 +189,46 @@ public class Controller {
                 while (reader.hasNextLine()) {
                     fileContent.setFileStatus(FileStatus.OPENED);
                     String data = reader.nextLine() + "\n";
-                    fileContent.setContent(data);
+                    fileContent.setContent(fileContent.getContent() + data);
                 }
 
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
+            view.getTextArea().setText(fileContent.getContent());
+            changeFileStatus();
         }
+    }
 
-        view.getTextArea().setText(fileContent.getContent());
-        changeFileStatus();
+    public void saveFile() throws IOException {
+        try {
+            if (fileContent.getFileStatus() == FileStatus.NEW) {
+                Files.write(Paths.get(fileContent.getFilename()), fileContent.getContent().getBytes(), StandardOpenOption.APPEND);
+                fileContent.setContent(view.getTextArea().getText());
+                fileContent.setFileStatus(FileStatus.SAVED);
+            } else if (fileContent.getFileStatus() == FileStatus.OPENED || fileContent.getFileStatus() == FileStatus.MODIFIED) {
+                fileContent.setContent(fileContent.getModifiedContent());
+                fileContent.setModifiedContent("");
+                fileContent.setFileStatus(FileStatus.SAVED);
+                Files.delete(Paths.get(fileContent.getFilename()));
+                Files.write(Paths.get(fileContent.getFilename()), fileContent.getContent().getBytes(), StandardOpenOption.APPEND);
+            }
+        } catch (IOException e) {
+            Files.write(Paths.get(fileContent.getFilename()), fileContent.getContent().getBytes(), StandardOpenOption.CREATE); //To jest prawdopodobnie najbardziej leniwe rozwiazanie na jakie kiedykolwiek wpadlem
+        }
     }
 
     /**
      * Returns extension from a given path
+     *
      * @param path
      * @return String
      */
-    private String extractExtension(String path) {
+    private @NotNull String extractExtension(@NotNull String path) {
         int tempIndex = 0;
         boolean flag = false;
         char[] pathArray = path.toCharArray();
-        String extension = "";
+        StringBuilder extension = new StringBuilder();
 
         while (!flag) {
             if (pathArray[tempIndex] == '.') {
@@ -199,16 +243,16 @@ public class Controller {
         }
 
         for (int i = tempIndex; i < pathArray.length; i++) {
-            extension += String.valueOf(pathArray[i]);
+            extension.append(String.valueOf(pathArray[i]));
         }
-        return extension;
+        return extension.toString();
     }
 
     /**
      * Changes the label to a previous font size
      */
-    private void changePreviousFontSizeLabel(){
-        switch (fileContent.getPreviousFontSize()){
+    private void changePreviousFontSizeLabel() {
+        switch (fileContent.getPreviousFontSize()) {
             case SIZE_8PT -> {
                 view.getPreviousFontSize().setText("8pt");
             }
@@ -242,47 +286,118 @@ public class Controller {
     /**
      * Changes the fontsize enum of a FileContent object
      */
-    private void setFileContentFontSize(){
-        switch(view.getTextArea().getFont().getSize()){
-            case 8 :
+    private void setFileContentFontSize() {
+        switch (view.getTextArea().getFont().getSize()) {
+            case 8 -> {
                 fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
                 fileContent.setFontSize(UsedFontSize.SIZE_8PT);
-                break;
-            case 10 :
+            }
+            case 10 -> {
                 fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
                 fileContent.setFontSize(UsedFontSize.SIZE_10PT);
-                break;
-            case 12 :
+            }
+            case 12 -> {
                 fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
                 fileContent.setFontSize(UsedFontSize.SIZE_12PT);
-                break;
-            case 14 :
+            }
+            case 14 -> {
                 fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
                 fileContent.setFontSize(UsedFontSize.SIZE_14PT);
-                break;
-            case 16 :
+            }
+            case 16 -> {
                 fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
                 fileContent.setFontSize(UsedFontSize.SIZE_16PT);
-                break;
-            case 18 :
+            }
+            case 18 -> {
                 fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
                 fileContent.setFontSize(UsedFontSize.SIZE_18PT);
-                break;
-            case 20 :
+            }
+            case 20 -> {
                 fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
                 fileContent.setFontSize(UsedFontSize.SIZE_20PT);
-                break;
-            case 22 :
+            }
+            case 22 -> {
                 fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
                 fileContent.setFontSize(UsedFontSize.SIZE_22PT);
-                break;
-            case 24 :
+            }
+            case 24 -> {
                 fileContent.setPreviousFontSize(fileContent.getCurrentFontSize());
                 fileContent.setFontSize(UsedFontSize.SIZE_24PT);
-                break;
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + view.getTextArea().getFont().getSize());
         }
     }
 
+    /**
+     * Getting called each time jTextArea is changed in any way.
+     */
+    class DocumentListenerAdapter implements DocumentListener {
 
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            try {
+                addModifiedText(e);
+            } catch (BadLocationException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
 
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            try {
+                removeModifiedText(e);
+            } catch (BadLocationException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            System.out.println("MODIFIED remove");
+        }
+
+        /**
+         * Gets called when contents of a jTextField is modified and adds it to a fileContent.modifiedContent variable
+         *
+         * @param e
+         * @throws BadLocationException
+         */
+        private void addModifiedText(DocumentEvent e) throws BadLocationException {
+            Document doc = (Document) e.getDocument();
+            int changedLength = view.getTextArea().getText().length() - fileContent.getContent().length();
+
+            if (changedLength > 0) {
+                if (!fileContent.getFileStatus().equals(FileStatus.NEW)) {
+                    fileContent.setFileStatus(FileStatus.MODIFIED);
+                    changeFileStatus();
+                }
+
+                fileContent.setModifiedContent(view.getTextArea().getText());
+            }
+        }
+
+        /**
+         * Gets called if there is a removed content from a modified file
+         *
+         * @param e
+         * @throws BadLocationException
+         */
+        private void removeModifiedText(DocumentEvent e) throws BadLocationException {
+            Document doc = (Document) e.getDocument();
+            int changedLength = view.getTextArea().getText().length() - fileContent.getContent().length();
+
+            if (changedLength == 0) {
+                if (!fileContent.getFileStatus().equals(FileStatus.NEW)) {
+                    fileContent.setFileStatus(FileStatus.OPENED);   //IF LENGTH OF A MODIFIED FILE GOES BACK TO ZERO, CHANGE THE LABEL BACK TO OPENED BECAUSE THE FILE IS NOT MODIFIED
+                    changeFileStatus();
+                }
+            } else if (changedLength < 0) {
+                if (!fileContent.getFileStatus().equals(FileStatus.NEW)) {
+                    fileContent.setFileStatus(FileStatus.MODIFIED);
+                    changeFileStatus();
+                }
+            }
+            fileContent.setModifiedContent(view.getTextArea().getText());
+        }
+    }
 }

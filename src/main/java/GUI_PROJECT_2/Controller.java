@@ -64,10 +64,6 @@ public class Controller {
         });
     }
 
-    private void saveAsFile() {
-
-    }
-
     /**
      * Initializes edit menu
      */
@@ -160,6 +156,8 @@ public class Controller {
             case OPENED -> view.getFileStatus().setText("Opened");
 
             case MODIFIED -> view.getFileStatus().setText("Modified");
+
+            case CREATED -> view.getFileStatus().setText("Created and saved");
         }
     }
 
@@ -239,6 +237,31 @@ public class Controller {
             Files.write(Paths.get(fileContent.getFilename()), fileContent.getContent().getBytes(), StandardOpenOption.CREATE); //To jest prawdopodobnie najbardziej leniwe rozwiazanie na jakie kiedykolwiek wpadlem
         }
     }
+
+    /**
+     * Saves a file to a specified place and format
+     */
+    private void saveAsFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Specify a file name and extension");
+
+        int result = fileChooser.showSaveDialog(view.getFrame());
+
+        if(result == JFileChooser.APPROVE_OPTION){
+            try{
+                fileContent.setFilename(fileChooser.getSelectedFile().getAbsolutePath());
+                System.out.println(fileContent.getFilename());
+                fileContent.setContent(fileContent.getModifiedContent());
+                fileContent.setModifiedContent("");
+                Files.write(Paths.get(fileContent.getFilename()), fileContent.getContent().getBytes(), StandardOpenOption.CREATE);
+                fileContent.setFileStatus(FileStatus.CREATED);
+                changeFileStatus();
+            }catch(Exception e){
+                JOptionPane.showMessageDialog(view.getFrame(), "Program could not save the file to a specified location.");
+            }
+        }
+    }
+
 
     /**
      * Returns extension from a given path

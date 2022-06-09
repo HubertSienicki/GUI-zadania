@@ -33,10 +33,6 @@ public class FileContent {
         this.modifiedContent = modifiedContent;
     }
 
-    public void setCurrentFontSize(UsedFontSize currentFontSize) {
-        this.currentFontSize = currentFontSize;
-    }
-
     public UsedFontSize getPreviousFontSize() {
         return previousFontSize;
     }

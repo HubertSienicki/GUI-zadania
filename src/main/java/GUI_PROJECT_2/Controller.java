@@ -186,15 +186,25 @@ public class Controller {
 
                 Scanner reader = new Scanner(fileContent.getSelectedFile());
 
-                while (reader.hasNextLine()) {
+                if (reader.hasNextLine()) {
                     fileContent.setFileStatus(FileStatus.OPENED);
                     String data = reader.nextLine() + "\n";
                     fileContent.setContent(fileContent.getContent() + data);
+                    while (reader.hasNextLine()) {
+                        fileContent.setFileStatus(FileStatus.OPENED);
+                        data = reader.nextLine() + "\n";
+                        fileContent.setContent(fileContent.getContent() + data);
+                    }
+                } else {
+                    fileContent.setFileStatus(FileStatus.OPENED);
+                    fileContent.setContent(" ");
                 }
+                reader.close();
 
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
+
             view.getTextArea().setText(fileContent.getContent());
             changeFileStatus();
         }
@@ -336,6 +346,7 @@ public class Controller {
         @Override
         public void insertUpdate(DocumentEvent e) {
             try {
+                System.out.println("ADD CALL");
                 addModifiedText(e);
             } catch (BadLocationException ex) {
                 throw new RuntimeException(ex);
@@ -345,6 +356,7 @@ public class Controller {
         @Override
         public void removeUpdate(DocumentEvent e) {
             try {
+                System.out.println("REMOVE CALL");
                 removeModifiedText(e);
             } catch (BadLocationException ex) {
                 throw new RuntimeException(ex);
@@ -365,15 +377,16 @@ public class Controller {
         private void addModifiedText(DocumentEvent e) throws BadLocationException {
             Document doc = (Document) e.getDocument();
             int changedLength = view.getTextArea().getText().length() - fileContent.getContent().length();
+            System.out.println(changedLength);
 
             if (changedLength > 0) {
                 if (!fileContent.getFileStatus().equals(FileStatus.NEW)) {
                     fileContent.setFileStatus(FileStatus.MODIFIED);
                     changeFileStatus();
                 }
-
-                fileContent.setModifiedContent(view.getTextArea().getText());
             }
+            fileContent.setModifiedContent(view.getTextArea().getText());
+            System.out.println(fileContent.getModifiedContent());
         }
 
         /**
@@ -385,6 +398,7 @@ public class Controller {
         private void removeModifiedText(DocumentEvent e) throws BadLocationException {
             Document doc = (Document) e.getDocument();
             int changedLength = view.getTextArea().getText().length() - fileContent.getContent().length();
+            System.out.println(changedLength);
 
             if (changedLength == 0) {
                 if (!fileContent.getFileStatus().equals(FileStatus.NEW)) {
@@ -394,10 +408,12 @@ public class Controller {
             } else if (changedLength < 0) {
                 if (!fileContent.getFileStatus().equals(FileStatus.NEW)) {
                     fileContent.setFileStatus(FileStatus.MODIFIED);
+                    changedLength = 0;
                     changeFileStatus();
                 }
             }
             fileContent.setModifiedContent(view.getTextArea().getText());
+            System.out.println(fileContent.getModifiedContent());
         }
     }
 }

@@ -2,7 +2,6 @@ package GUI_PROJECT_2;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.print.Doc;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -16,9 +15,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
 public class Controller {
-    private View view;
-    private FileContent fileContent;
+    private final View view;
+    private final FileContent fileContent;
 
     public Controller(View view, FileContent fileContent) {
         this.view = view;
@@ -40,7 +40,13 @@ public class Controller {
      * Initializes file menu
      */
     private void initFileMenu() {
-        view.getOpen().addActionListener(e -> openFile());
+        view.getOpen().addActionListener(e -> {
+            try {
+                openFile();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         view.getSave().addActionListener(e -> {
             try {
@@ -51,15 +57,15 @@ public class Controller {
             }
         });
 
-        view.getSaveAs().addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.showOpenDialog(view.getFrame());
-            int result = fileChooser.showOpenDialog(view.getFrame());
-        });
+        view.getSaveAs().addActionListener(e -> saveAsFile());
 
         view.getExit().addActionListener(e -> {
             System.exit(0);
         });
+    }
+
+    private void saveAsFile() {
+
     }
 
     /**
@@ -119,11 +125,11 @@ public class Controller {
     /**
      * Refactors text from jTextArea by adding desired text at a specified caret position
      *
-     * @param text
+     * @param text Text to add a constant to
      * @return String
      */
     private String refactorText(String text) {
-        String finalText = "";
+        StringBuilder finalText = new StringBuilder();
         int caretPosition = view.getTextArea().getCaretPosition();
         ArrayList copyText = new ArrayList();
 
@@ -136,36 +142,31 @@ public class Controller {
         }
 
         for (Object a : copyText) {
-            finalText += a;
+            finalText.append(a);
         }
 
-        return finalText;
+        return finalText.toString();
     }
 
     /**
-     * Changes filestatus label according to the specified enum
+     * Changes fileStatus label according to the specified enum
      */
     private void changeFileStatus() {
         switch (fileContent.getFileStatus()) {
-            case NEW -> {
-                view.getFileStatus().setText("New");
-            }
-            case SAVED -> {
-                view.getFileStatus().setText("Saved");
-            }
-            case OPENED -> {
-                view.getFileStatus().setText("Opened");
-            }
-            case MODIFIED -> {
-                view.getFileStatus().setText("Modified");
-            }
+            case NEW -> view.getFileStatus().setText("New");
+
+            case SAVED -> view.getFileStatus().setText("Saved");
+
+            case OPENED -> view.getFileStatus().setText("Opened");
+
+            case MODIFIED -> view.getFileStatus().setText("Modified");
         }
     }
 
     /**
      * Opens a specified file by a fileChooser
      */
-    private void openFile() {
+    private void openFile() throws IOException {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Specify a file to open");
         int result = fileChooser.showOpenDialog(view.getFrame());
@@ -183,26 +184,14 @@ public class Controller {
             fileContent.setFilename(fileContent.getSelectedFile().getAbsolutePath());
             fileContent.setExtension(extractExtension(fileContent.getFilename()));
             try {
-
-                Scanner reader = new Scanner(fileContent.getSelectedFile());
-
-                if (reader.hasNextLine()) {
-                    fileContent.setFileStatus(FileStatus.OPENED);
-                    String data = reader.nextLine() + "\n";
-                    fileContent.setContent(fileContent.getContent() + data);
-                    while (reader.hasNextLine()) {
-                        fileContent.setFileStatus(FileStatus.OPENED);
-                        data = reader.nextLine() + "\n";
-                        fileContent.setContent(fileContent.getContent() + data);
-                    }
-                } else {
-                    fileContent.setFileStatus(FileStatus.OPENED);
-                    fileContent.setContent(" ");
-                }
-                reader.close();
+                readFile();
 
             } catch (FileNotFoundException ex) {
-                throw new RuntimeException(ex);
+                JOptionPane.showMessageDialog(view.getFrame(), "The system could not find the file specified for :"
+                        + fileContent.getFilename()
+                        + "\n... Creating a file");
+                Files.write(Paths.get(fileContent.getFilename()), "".getBytes(), StandardOpenOption.CREATE);
+                readFile();
             }
 
             view.getTextArea().setText(fileContent.getContent());
@@ -210,18 +199,41 @@ public class Controller {
         }
     }
 
+    private void readFile() throws FileNotFoundException {
+        Scanner reader = new Scanner(fileContent.getSelectedFile());
+
+        if (reader.hasNextLine()) {
+            fileContent.setFileStatus(FileStatus.OPENED);
+            String data = reader.nextLine() + "\n";
+            fileContent.setContent(fileContent.getContent() + data);
+            while (reader.hasNextLine()) {
+                fileContent.setFileStatus(FileStatus.OPENED);
+                data = reader.nextLine() + "\n";
+                fileContent.setContent(fileContent.getContent() + data);
+            }
+        } else {
+            fileContent.setFileStatus(FileStatus.OPENED);
+            fileContent.setContent(" ");
+        }
+        reader.close();
+    }
+
     public void saveFile() throws IOException {
         try {
             if (fileContent.getFileStatus() == FileStatus.NEW) {
                 Files.write(Paths.get(fileContent.getFilename()), fileContent.getContent().getBytes(), StandardOpenOption.APPEND);
+
                 fileContent.setContent(view.getTextArea().getText());
                 fileContent.setFileStatus(FileStatus.SAVED);
+
             } else if (fileContent.getFileStatus() == FileStatus.OPENED || fileContent.getFileStatus() == FileStatus.MODIFIED) {
                 fileContent.setContent(fileContent.getModifiedContent());
                 fileContent.setModifiedContent("");
                 fileContent.setFileStatus(FileStatus.SAVED);
+
                 Files.delete(Paths.get(fileContent.getFilename()));
                 Files.write(Paths.get(fileContent.getFilename()), fileContent.getContent().getBytes(), StandardOpenOption.APPEND);
+
             }
         } catch (IOException e) {
             Files.write(Paths.get(fileContent.getFilename()), fileContent.getContent().getBytes(), StandardOpenOption.CREATE); //To jest prawdopodobnie najbardziej leniwe rozwiazanie na jakie kiedykolwiek wpadlem
@@ -231,7 +243,7 @@ public class Controller {
     /**
      * Returns extension from a given path
      *
-     * @param path
+     * @param path path to a file
      * @return String
      */
     private @NotNull String extractExtension(@NotNull String path) {
@@ -347,7 +359,7 @@ public class Controller {
         public void insertUpdate(DocumentEvent e) {
             try {
                 System.out.println("ADD CALL");
-                addModifiedText(e);
+                addModifiedText();
             } catch (BadLocationException ex) {
                 throw new RuntimeException(ex);
             }
@@ -357,7 +369,7 @@ public class Controller {
         public void removeUpdate(DocumentEvent e) {
             try {
                 System.out.println("REMOVE CALL");
-                removeModifiedText(e);
+                removeModifiedText();
             } catch (BadLocationException ex) {
                 throw new RuntimeException(ex);
             }
@@ -365,17 +377,15 @@ public class Controller {
 
         @Override
         public void changedUpdate(DocumentEvent e) {
-            System.out.println("MODIFIED remove");
+            System.out.println("UNUSED CHANGED UPDATE");
         }
 
         /**
          * Gets called when contents of a jTextField is modified and adds it to a fileContent.modifiedContent variable
          *
-         * @param e
-         * @throws BadLocationException
+         * @throws BadLocationException Gets thrown if an exception is not found
          */
-        private void addModifiedText(DocumentEvent e) throws BadLocationException {
-            Document doc = (Document) e.getDocument();
+        private void addModifiedText() throws BadLocationException {
             int changedLength = view.getTextArea().getText().length() - fileContent.getContent().length();
             System.out.println(changedLength);
 
@@ -392,11 +402,9 @@ public class Controller {
         /**
          * Gets called if there is a removed content from a modified file
          *
-         * @param e
-         * @throws BadLocationException
+         * @throws BadLocationException Gets thrown if an exception is not found
          */
-        private void removeModifiedText(DocumentEvent e) throws BadLocationException {
-            Document doc = (Document) e.getDocument();
+        private void removeModifiedText() throws BadLocationException {
             int changedLength = view.getTextArea().getText().length() - fileContent.getContent().length();
             System.out.println(changedLength);
 
@@ -416,4 +424,5 @@ public class Controller {
             System.out.println(fileContent.getModifiedContent());
         }
     }
+
 }

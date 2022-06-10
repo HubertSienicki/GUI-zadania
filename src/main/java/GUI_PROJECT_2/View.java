@@ -1,11 +1,11 @@
 package GUI_PROJECT_2;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.Arrays;
 
 public class View {
 
@@ -14,8 +14,10 @@ public class View {
     }
 
     private void initUI() {
+        String title = "Notepad";
         frame = new JFrame(title);
-        panel = new JPanel(new BorderLayout());
+
+        JPanel panel = new JPanel(new BorderLayout());
         bottomPanel = new JPanel(new BorderLayout());
 
         createMenuBar();
@@ -28,6 +30,10 @@ public class View {
 
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
+
+        int height = 1080;
+        int width = 1920;
+
         frame.setPreferredSize(new Dimension(width, height));
         frame.add(panel);
         frame.pack();
@@ -55,10 +61,10 @@ public class View {
         this.exit = new JMenuItem("Exit");
 
         fileMenu.setMnemonic(KeyEvent.VK_F);
-        open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-        save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-        saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
-        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK));
+        save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+        saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_DOWN_MASK));
+        exit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK));
 
         fileMenu.add(open);
         fileMenu.add(save);
@@ -87,7 +93,7 @@ public class View {
 
     private void createEditMenu() {
         editMenu = new JMenu("Edit");
-        addressMenu = new JMenu("Adresy");
+        JMenu addressMenu = new JMenu("Adresy");
         praca = new JMenuItem("Praca");
         dom = new JMenuItem("Dom");
         szkola = new JMenuItem("Szkola");
@@ -110,13 +116,17 @@ public class View {
     }
 
     private void createBottomPanel() {
-        previousBackground = new JLabel("test");
-        previousForground = new JLabel("test");
-        previousFontSize = new JLabel("testpt");
-        fileStatus = new JLabel("testStatus");
-        previousInfoPanel = new JPanel(new FlowLayout());
+        previousBackground = new JLabel();
+        previousForeground = new JLabel();
+        previousFontSize = new JLabel();
+        fileStatus = new JLabel();
 
-        previousInfoPanel.add(previousForground);
+
+        previousFontSize.setPreferredSize(new Dimension(20, 20));
+
+        JPanel previousInfoPanel = new JPanel(new FlowLayout());
+
+        previousInfoPanel.add(previousForeground);
         previousInfoPanel.add(previousBackground);
         previousInfoPanel.add(previousFontSize);
 
@@ -125,11 +135,38 @@ public class View {
 
     }
 
+    public Icon returnIcon(@NotNull Colors color, int x, int y) {
+        switch (color) {
+            case RED -> {
+                return new IconCreator(Color.red, x, y);
+            }
+            case BLUE -> {
+                return new IconCreator(Color.BLUE, x, y);
+            }
+            case BLACK -> {
+                return new IconCreator(Color.BLACK, x, y);
+            }
+            case GREEN -> {
+                return new IconCreator(Color.GREEN, x, y);
+            }
+            case WHITE -> {
+                return new IconCreator(Color.WHITE, x, y);
+            }
+            case ORANGE -> {
+                return new IconCreator(Color.ORANGE, x, y);
+            }
+            case YELLOW -> {
+                return new IconCreator(Color.YELLOW, x, y);
+            }
+        }
+        return null;
+    }
+
     /**
      * Generates font buttons
      */
-    private void generateFontButtons(){
-        for (int i = 0; i < fontSizeButtons.length; i++){
+    private void generateFontButtons() {
+        for (int i = 0; i < fontSizeButtons.length; i++) {
             fontSizeButtons[i] = new JMenuItem();
 
             fontSizeButtons[i].setFont(fontTable[i]);
@@ -138,23 +175,24 @@ public class View {
             fontSizeMenu.add(fontSizeButtons[i]);
         }
     }
+
     /**
      * Generates background and foreground buttons
      */
-    private void generateButtons(){
-        for (int i = 0; i < backgroundButtons.length ; i++) {
+    private void generateButtons() {
+        for (int i = 0; i < backgroundButtons.length; i++) {
 
             backgroundButtons[i] = new JRadioButtonMenuItem();
             foregroundButtons[i] = new JRadioButtonMenuItem();
 
-            JLabel backgroundButtonLabel = new JLabel(new IconCreator(colorTable[colorIndex]));
-            JLabel foregroundButtonLabel = new JLabel(new IconCreator(colorTable[colorIndex]));
+            JLabel backgroundButtonLabel = new JLabel(new IconCreator(colorTable[colorIndex], 16, 0));
+            JLabel foregroundButtonLabel = new JLabel(new IconCreator(colorTable[colorIndex], 16, 0));
 
             foregroundButtons[i].setPreferredSize(new Dimension(80, 20));
             foregroundButtonLabel.setText("     " + colorNames[i]);
             foregroundButtonLabel.setForeground(colorTable[colorIndex]);
 
-            backgroundButtons[i].setPreferredSize(new Dimension(80,20));
+            backgroundButtons[i].setPreferredSize(new Dimension(80, 20));
             backgroundButtonLabel.setText("     " + colorNames[i]);
             backgroundButtonLabel.setForeground(colorTable[colorIndex]);
 
@@ -175,7 +213,22 @@ public class View {
         colorIndex = 0;
     }
 
-    //Getters and setters
+    //-------------------------Getters and setters-------------------------//
+    public void setPreviousForegroundLabel(Icon previousForegroundIcon) {
+        this.previousForeground.setIcon(previousForegroundIcon);
+    }
+
+    public void setPreviousBackgroundLabel(Icon previousBackgroundIcon) {
+        this.previousBackground.setIcon(previousBackgroundIcon);
+    }
+
+    public JLabel getPreviousBackgroundLabel() {
+        return previousBackground;
+    }
+
+    public JLabel getPreviousForegroundLabel() {
+        return previousForeground;
+    }
 
     public JFrame getFrame() {
         return frame;
@@ -225,26 +278,18 @@ public class View {
     Color[] colorTable = {Color.green, Color.orange, Color.red, Color.black, Color.white, Color.yellow, Color.blue};
     String[] colorNames = {"Green", "Orange", "Red", "Black", "White", "Yellow", "Blue"};
 
-    int colorIndex = 0;
-    Font[] fontTable = {new Font("JetBrains Mono", Font.PLAIN, 8), new Font("JetBrains Mono", Font.PLAIN, 10), new Font("JetBrains Mono", Font.PLAIN, 12), new Font("JetBrains Mono", Font.PLAIN, 14), new Font("JetBrains Mono", Font.PLAIN, 16), new Font("JetBrains Mono", Font.PLAIN, 18), new Font("JetBrains Mono", Font.PLAIN, 20), new Font("JetBrains Mono", Font.PLAIN, 22), new Font("JetBrains Mono", Font.PLAIN, 24)};
-    int fontIndex = 0;
-    private final int width = 600;
-    private final int height = 400;
-    private String title = "Notepad";
     private JFrame frame;
-    private JPanel panel;
     private JPanel bottomPanel;
-    private JPanel previousInfoPanel;
     private JTextArea textArea;
+    private JScrollPane textAreaScrollPane;
+    
     private JMenuBar menuBar;
     private JMenu fileMenu;
     private JMenu editMenu;
     private JMenu optionsMenu;
-    private JMenu addressMenu;
     private JMenu foregroundMenu;
     private JMenu backgroundMenu;
     private JMenu fontSizeMenu;
-    private JScrollPane textAreaScrollPane;
 
     private JMenuItem open;
     private JMenuItem save;
@@ -254,7 +299,7 @@ public class View {
     private JMenuItem dom;
     private JMenuItem szkola;
 
-    private JLabel previousForground;
+    private JLabel previousForeground;
     private JLabel previousBackground;
     private JLabel previousFontSize;
     private JLabel fileStatus;
@@ -278,4 +323,7 @@ public class View {
     private final JRadioButtonMenuItem[] backgroundButtons = new JRadioButtonMenuItem[7];
     private final JMenuItem[] fontSizeButtons = new JMenuItem[9];
 
+    int colorIndex = 0;
+    Font[] fontTable = {new Font("JetBrains Mono", Font.PLAIN, 8), new Font("JetBrains Mono", Font.PLAIN, 10), new Font("JetBrains Mono", Font.PLAIN, 12), new Font("JetBrains Mono", Font.PLAIN, 14), new Font("JetBrains Mono", Font.PLAIN, 16), new Font("JetBrains Mono", Font.PLAIN, 18), new Font("JetBrains Mono", Font.PLAIN, 20), new Font("JetBrains Mono", Font.PLAIN, 22), new Font("JetBrains Mono", Font.PLAIN, 24)};
+    int fontIndex = 0;
 }

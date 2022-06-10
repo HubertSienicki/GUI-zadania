@@ -6,7 +6,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 
+/**
+ * Controls and merges data between View class and fileContent class
+ */
 public class Controller {
     private final View view;
     private final FileContent fileContent;
@@ -59,9 +62,7 @@ public class Controller {
 
         view.getSaveAs().addActionListener(e -> saveAsFile());
 
-        view.getExit().addActionListener(e -> {
-            System.exit(0);
-        });
+        view.getExit().addActionListener(e -> System.exit(0));
     }
 
     /**
@@ -90,13 +91,26 @@ public class Controller {
     private void initOptionsMenu() {
         for (JRadioButtonMenuItem item : view.getForegroundButtonArray()) {
             item.addActionListener(e -> {
+                fileContent.setPreviousForeground(fileContent.getCurrentForeground());
+
                 view.getTextArea().setForeground(item.getForeground());
+
+                fileContent.setCurrentForeground(enumerateColors(item.getForeground()));
+
+                setBottomLabels();
+
             });
         }
 
         for (JRadioButtonMenuItem item : view.getBackgroundButtonArray()) {
             item.addActionListener(e -> {
+                fileContent.setPreviousBackground(fileContent.getCurrentBackground());
+
                 view.getTextArea().setBackground(item.getForeground());
+
+                fileContent.setCurrentBackground(enumerateColors(item.getForeground()));
+
+                setBottomLabels();
             });
         }
 
@@ -109,11 +123,28 @@ public class Controller {
         }
     }
 
+    /**
+     * Initializes bottom labels
+     */
     private void initBottomLabel() {
         changeFileStatus();
         changePreviousFontSizeLabel();
+        setBottomLabels();
     }
 
+    /**
+     * Sets previous background and foreground labels
+     */
+    private void setBottomLabels() {
+        view.getPreviousBackgroundLabel().setText("bg");
+        view.getPreviousForegroundLabel().setText("fg");
+        view.setPreviousBackgroundLabel(view.returnIcon(fileContent.getPreviousBackground(), 0, 0));
+        view.setPreviousForegroundLabel(view.returnIcon(fileContent.getPreviousForeground(), 0, 0));
+    }
+
+    /**
+     * Initializes text area
+     */
     private void initTextArea() {
         view.getTextArea().getDocument().addDocumentListener(new DocumentListenerAdapter());
     }
@@ -127,7 +158,7 @@ public class Controller {
     private String refactorText(String text) {
         StringBuilder finalText = new StringBuilder();
         int caretPosition = view.getTextArea().getCaretPosition();
-        ArrayList copyText = new ArrayList();
+        ArrayList<Character> copyText = new ArrayList<>();
 
         for (char a : view.getTextArea().getText().toCharArray()) {
             copyText.add(a);
@@ -159,6 +190,31 @@ public class Controller {
 
             case CREATED -> view.getFileStatus().setText("Created and saved");
         }
+    }
+
+    /**
+     * Translates a color to Colors enumerator
+     *
+     * @param color color to translate to enumerator
+     * @return Colors enumerator
+     */
+    private Colors enumerateColors(Color color) {
+        if (color.equals(Color.green)) {
+            return Colors.GREEN;
+        } else if (color.equals(Color.orange)) {
+            return Colors.ORANGE;
+        } else if (color.equals(Color.red)) {
+            return Colors.RED;
+        } else if (color.equals(Color.BLACK)) {
+            return Colors.BLACK;
+        } else if (color.equals(Color.yellow)) {
+            return Colors.YELLOW;
+        } else if (color.equals(Color.BLUE)) {
+            return Colors.BLUE;
+        } else if (color.equals(Color.white)) {
+            return Colors.WHITE;
+        }
+        return null;
     }
 
     /**
@@ -198,6 +254,11 @@ public class Controller {
         }
     }
 
+    /**
+     * Reads a file provided in fileContent
+     *
+     * @throws FileNotFoundException if file is not found
+     */
     private void readFile() throws FileNotFoundException {
         Scanner reader = new Scanner(fileContent.getSelectedFile());
 
@@ -217,6 +278,11 @@ public class Controller {
         reader.close();
     }
 
+    /**
+     * Saves the text to a file, works like a quick save
+     *
+     * @throws IOException Used to recreate the original file in order to save it;
+     */
     public void saveFile() throws IOException {
         try {
             if (fileContent.getFileStatus() == FileStatus.NEW) {
@@ -271,7 +337,7 @@ public class Controller {
      * Returns extension from a given path
      *
      * @param path path to a file
-     * @return String
+     * @return String extension of a file
      */
     private @NotNull String extractExtension(@NotNull String path) {
         int tempIndex = 0;
@@ -302,33 +368,15 @@ public class Controller {
      */
     private void changePreviousFontSizeLabel() {
         switch (fileContent.getPreviousFontSize()) {
-            case SIZE_8PT -> {
-                view.getPreviousFontSize().setText("8pt");
-            }
-            case SIZE_10PT -> {
-                view.getPreviousFontSize().setText("10pt");
-            }
-            case SIZE_12PT -> {
-                view.getPreviousFontSize().setText("12pt");
-            }
-            case SIZE_14PT -> {
-                view.getPreviousFontSize().setText("14pt");
-            }
-            case SIZE_16PT -> {
-                view.getPreviousFontSize().setText("16pt");
-            }
-            case SIZE_18PT -> {
-                view.getPreviousFontSize().setText("18pt");
-            }
-            case SIZE_20PT -> {
-                view.getPreviousFontSize().setText("20pt");
-            }
-            case SIZE_22PT -> {
-                view.getPreviousFontSize().setText("22pt");
-            }
-            case SIZE_24PT -> {
-                view.getPreviousFontSize().setText("24pt");
-            }
+            case SIZE_8PT -> view.getPreviousFontSize().setText("8pt");
+            case SIZE_10PT -> view.getPreviousFontSize().setText("10pt");
+            case SIZE_12PT -> view.getPreviousFontSize().setText("12pt");
+            case SIZE_14PT -> view.getPreviousFontSize().setText("14pt");
+            case SIZE_16PT -> view.getPreviousFontSize().setText("16pt");
+            case SIZE_18PT -> view.getPreviousFontSize().setText("18pt");
+            case SIZE_20PT -> view.getPreviousFontSize().setText("20pt");
+            case SIZE_22PT -> view.getPreviousFontSize().setText("22pt");
+            case SIZE_24PT -> view.getPreviousFontSize().setText("24pt");
         }
     }
 

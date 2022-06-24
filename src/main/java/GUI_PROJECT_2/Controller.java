@@ -280,7 +280,6 @@ public class Controller {
 
     /**
      * Saves the text to a file, works like a quick save
-     *
      * @throws IOException Used to recreate the original file in order to save it;
      */
     public void saveFile() throws IOException {
